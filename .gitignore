@@ -1,0 +1,8 @@
+.env
+.venv/
+.ipynb_checkpoints/
+.suffix
+agents/
+.azure/
+__pycache__/
+.DS_Store
