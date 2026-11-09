@@ -4,7 +4,7 @@
 > The **Microsoft Copilot harness** is the managed runtime that Microsoft Foundry runs *around* your prompt agent: the agent loop, a sandbox, context, files and tool orchestration. You don't have to build any of it.
 
 <p align="center">
-  <img src="assets/how-it-works.svg" alt="Animated diagram: your app calls the agent endpoint; the Copilot harness runs the agent loop and a sandbox, then calls the model, tools and Foundry Files" width="100%">
+  <img src="assets/how-it-works.svg" alt="Animated diagram: your app calls the agent endpoint; the Copilot harness runs the agent loop, delegates to subagents, and uses a sandbox, then calls the model, tools and Foundry Files, all under Foundry governance (Entra ID and RBAC, guardrails and egress rules, versions, traces)" width="100%">
 </p>
 
 > ⚠️ **Preview.** The Copilot harness (`harness.type: microsoft_copilot_preview`) is in public preview. It has no SLA, and its behavior and APIs may change.
@@ -93,7 +93,7 @@ These fit the harness's capabilities but **aren't documented Microsoft scenarios
 
 - 📄 **Document processing:** read → transform → write output files to Foundry Files.
 - 🧰 **Ops runbooks:** a skill encodes the procedure, MCP tools act, and egress rules limit which hosts it can reach.
-- 🤝 **Long multi-step tasks:** subagents take parts of the work in parallel.
+- 🤝 **Long multi-step tasks:** the agent loop delegates parts of the work to subagents (Learn: *"Delegate work to additional agents"*).
 
 ---
 

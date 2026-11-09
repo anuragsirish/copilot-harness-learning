@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" width="1000" height="470" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="1000" height="580" role="img" aria-labelledby="t d">
   <title id="t">How the Microsoft Copilot harness works</title>
-  <desc id="d">Your app or user calls the agent endpoint. The Copilot harness in Foundry Agent Service runs the agent loop and a sandbox (files, shell, code), using skills, instructions and per-conversation context, and calls the model, tools, and Foundry Files.</desc>
+  <desc id="d">Your app or user calls the agent endpoint. The Copilot harness in Foundry Agent Service runs the agent loop, which can delegate work to subagents, and a sandbox (files, shell, web fetch), using skills, instructions and per-conversation context, and calls the model, tools, and Foundry Files. Foundry governance (agent identity and RBAC, guardrails and egress rules, versions, traces) applies across the whole flow.</desc>
   <style>
     text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
     .kicker{font-size:12px;font-weight:800;letter-spacing:3px;fill:#ea580c}
@@ -13,6 +13,9 @@
     .spinner{transform-origin:center;transform-box:fill-box;animation:spin 6s linear infinite}
     .out rect{animation:hit 3.2s ease-in-out infinite}
     .out.b rect{animation-delay:.35s}.out.c rect{animation-delay:.7s}
+    .sub-a rect{fill:#fff7ed;stroke:#fdba74;stroke-width:1.5;animation:hit 2.4s ease-in-out infinite}
+    .sub-a.s2 rect{animation-delay:.3s}.sub-a.s3 rect{animation-delay:.6s}
+    .sub-a text{font-size:12.5px;font-weight:700;fill:#7c2d12}
     @keyframes dash{to{stroke-dashoffset:-32}}
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes glow{0%,100%{stroke-width:2;stroke:#fb923c}50%{stroke-width:3.5;stroke:#ea580c}}
@@ -24,27 +27,49 @@
     <linearGradient id="hg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fff7ed"/><stop offset="1" stop-color="#ffe4cc"/></linearGradient>
     <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker>
   </defs>
-  <rect width="1000" height="470" rx="18" fill="url(#bg)"/>
+  <rect width="1000" height="580" rx="18" fill="url(#bg)"/>
   <text class="kicker" x="20" y="34">HOW IT WORKS</text>
   <text class="title" x="20" y="72">One request, many managed steps</text>
   <g transform="translate(0,80)">
     <g class="node"><rect x="20" y="150" width="160" height="80" rx="14"/><text x="100" y="185" text-anchor="middle">Your app / user</text><text class="sub" x="100" y="205" text-anchor="middle">azd invoke · SDK · Portal</text></g>
     <path class="flow" d="M180 190 L300 190" stroke="#ea580c" stroke-width="3" fill="none" marker-end="url(#ar)"/>
     <text x="240" y="178" font-size="11" fill="#7c6a5c" text-anchor="middle">agent endpoint</text>
-    <rect class="harness" x="305" y="60" width="330" height="260" rx="22"/>
+    <rect class="harness" x="305" y="60" width="330" height="320" rx="22"/>
     <text x="470" y="95" text-anchor="middle" font-size="19" font-weight="800" fill="#9a3412">Copilot Harness</text>
     <text x="470" y="115" text-anchor="middle" font-size="12" fill="#7c6a5c">Foundry Agent Service</text>
-    <g transform="translate(400,190)"><circle r="46" fill="none" stroke="#fb923c" stroke-width="3" stroke-dasharray="14 10" class="spinner"/><text text-anchor="middle" y="5" font-size="14" font-weight="800" fill="#7c2d12">Agent loop</text></g>
-    <g class="node"><rect x="470" y="150" width="140" height="80" rx="12"/><text x="540" y="185" text-anchor="middle">Sandbox</text><text class="sub" x="540" y="205" text-anchor="middle">files · shell · code</text></g>
-    <text x="470" y="290" text-anchor="middle" font-size="12" fill="#7c6a5c">Skills · Instructions · Context per conversation</text>
+    <g transform="translate(400,175)"><circle r="46" fill="none" stroke="#fb923c" stroke-width="3" stroke-dasharray="14 10" class="spinner"/><text text-anchor="middle" y="5" font-size="14" font-weight="800" fill="#7c2d12">Agent loop</text></g>
+    <g class="node"><rect x="470" y="135" width="140" height="80" rx="12"/><text x="540" y="170" text-anchor="middle">Sandbox</text><text class="sub" x="540" y="190" text-anchor="middle">files · shell · web fetch</text></g>
+    <path class="flow" d="M380 218 L366 262" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+    <path class="flow" d="M400 221 L468 262" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+    <path class="flow" d="M420 216 L570 262" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+    <g class="sub-a s1"><rect x="321" y="265" width="90" height="34" rx="10"/><text x="366" y="287" text-anchor="middle">🤖 subagent</text></g>
+    <g class="sub-a s2"><rect x="423" y="265" width="90" height="34" rx="10"/><text x="468" y="287" text-anchor="middle">🤖 subagent</text></g>
+    <g class="sub-a s3"><rect x="525" y="265" width="90" height="34" rx="10"/><text x="570" y="287" text-anchor="middle">🤖 subagent</text></g>
+    <text x="470" y="320" text-anchor="middle" font-size="11.5" font-weight="700" fill="#9a3412">Subagents · loop delegates work to additional agents</text>
+    <text x="470" y="355" text-anchor="middle" font-size="12" fill="#7c6a5c">Skills · Instructions · Conversation state + workspace</text>
     <path class="flow" d="M635 120 L760 70" stroke="#e11d48" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-    <path class="flow" d="M635 190 L760 190" stroke="#e11d48" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-    <path class="flow" d="M635 260 L760 310" stroke="#e11d48" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+    <path class="flow" d="M635 175 L760 190" stroke="#e11d48" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+    <path class="flow" d="M635 300 L760 310" stroke="#e11d48" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
     <g class="node out a"><rect x="765" y="35" width="210" height="70" rx="12"/><text x="870" y="66" text-anchor="middle">🧠 Model</text><text class="sub" x="870" y="86" text-anchor="middle">reasoning + tool calling</text></g>
     <g class="node out b"><rect x="765" y="155" width="210" height="70" rx="12"/><text x="870" y="186" text-anchor="middle">🛠️ Tools</text><text class="sub" x="870" y="206" text-anchor="middle">web search · MCP · functions</text></g>
     <g class="node out c"><rect x="765" y="275" width="210" height="70" rx="12"/><text x="870" y="306" text-anchor="middle">📁 Foundry Files</text><text class="sub" x="870" y="326" text-anchor="middle">durable outputs (agent identity)</text></g>
-    <circle r="7" fill="#f59e0b"><animateMotion dur="3.2s" repeatCount="indefinite" path="M180 190 L300 190 L400 144 A46 46 0 1 1 399 144 L540 190 L760 190"/></circle>
+    <g class="gov">
+      <path d="M100 232 L100 405 M470 382 L470 405 M870 347 L870 405" stroke="#d6c4b3" stroke-width="1.5" stroke-dasharray="3 5" fill="none"/>
+      <rect x="20" y="405" width="955" height="70" rx="16" fill="#fff" stroke="#fdba74" stroke-width="2" stroke-dasharray="10 6" class="flow"/>
+      <text x="45" y="436" font-size="15" font-weight="800" fill="#9a3412">🛡️ Foundry governance</text>
+      <text x="45" y="458" font-size="11.5" fill="#7c6a5c">end to end · same as any prompt agent</text>
+      <g font-size="12" font-weight="700" fill="#7c2d12" text-anchor="middle">
+        <rect x="305" y="424" width="140" height="32" rx="16" fill="#fff7ed" stroke="#fed7aa"/><text x="375" y="445">🪪 Entra ID + RBAC</text>
+        <rect x="455" y="424" width="165" height="32" rx="16" fill="#fff7ed" stroke="#fed7aa"/><text x="537" y="445">🚧 Guardrails · egress</text>
+        <rect x="630" y="424" width="150" height="32" rx="16" fill="#fff7ed" stroke="#fed7aa"/><text x="705" y="445">🏷️ Versioned agent</text>
+        <rect x="790" y="424" width="165" height="32" rx="16" fill="#fff7ed" stroke="#fed7aa"/><text x="872" y="445">📈 Traces</text>
+      </g>
+    </g>
+    <circle r="7" fill="#f59e0b"><animateMotion dur="3.2s" repeatCount="indefinite" path="M180 190 L300 190 L400 129 A46 46 0 1 1 399 129 L540 175 L760 190"/></circle>
     <circle r="5" fill="#fb7185" opacity=".9"><animateMotion dur="3.2s" begin="1.2s" repeatCount="indefinite" path="M635 120 L760 70"/></circle>
-    <circle r="5" fill="#fb7185" opacity=".9"><animateMotion dur="3.2s" begin="1.9s" repeatCount="indefinite" path="M635 260 L760 310"/></circle>
+    <circle r="5" fill="#fb7185" opacity=".9"><animateMotion dur="3.2s" begin="1.9s" repeatCount="indefinite" path="M635 300 L760 310"/></circle>
+    <circle r="4.5" fill="#f59e0b"><animateMotion dur="2.4s" begin=".4s" repeatCount="indefinite" path="M380 218 L366 262"/></circle>
+    <circle r="4.5" fill="#f59e0b"><animateMotion dur="2.4s" begin=".7s" repeatCount="indefinite" path="M400 221 L468 262"/></circle>
+    <circle r="4.5" fill="#f59e0b"><animateMotion dur="2.4s" begin="1s" repeatCount="indefinite" path="M420 216 L570 262"/></circle>
   </g>
 </svg>
