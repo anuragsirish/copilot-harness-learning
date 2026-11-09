@@ -29,7 +29,7 @@
   </defs>
   <rect width="1000" height="580" rx="18" fill="url(#bg)"/>
   <text class="kicker" x="20" y="34">HOW IT WORKS</text>
-  <text class="title" x="20" y="72">One request, many managed steps</text>
+  <text class="title" x="20" y="72">Microsoft Copilot harness<tspan font-size="18" font-weight="600" fill="#7c6a5c" dx="14">one request, many managed steps</tspan></text>
   <g transform="translate(0,80)">
     <g class="node"><rect x="20" y="150" width="160" height="80" rx="14"/><text x="100" y="185" text-anchor="middle">Your app / user</text><text class="sub" x="100" y="205" text-anchor="middle">azd invoke · SDK · Portal</text></g>
     <path class="flow" d="M180 190 L300 190" stroke="#ea580c" stroke-width="3" fill="none" marker-end="url(#ar)"/>
