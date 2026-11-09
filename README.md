@@ -75,14 +75,14 @@ azd ai agent invoke --new-conversation "Give me a research brief on <topic>"
 
 ## 💡 Example use cases
 
-| | Use case | What the harness adds |
-|---|---|---|
-| 🔎 | **Research briefs** | Web search, then a structured, cited write-up |
-| 📊 | **Data analysis** | Reads uploaded CSVs and runs code in the sandbox to build charts and stats |
-| 📄 | **Document processing** | Extracts, transforms and saves outputs to Foundry Files |
-| 🧰 | **Ops runbooks** | Follows a skill step by step and calls tools through MCP |
-| 🎧 | **Support agents** | Combines knowledge, tools and per-conversation context |
-| 🤝 | **Multi-step work** | Plans, delegates to subagents and checks its own results |
+| | Use case | What the harness adds | How this adds value |
+|---|---|---|---|
+| 🔎 | **Research briefs** | Web search, then a structured, cited write-up | Hours of manual research become minutes, with sources you can verify |
+| 📊 | **Data analysis** | Reads uploaded CSVs and runs code in the sandbox to build charts and stats | Numbers come from real code, not guesses, and you build no compute or isolation of your own |
+| 📄 | **Document processing** | Extracts, transforms and saves outputs to Foundry Files | Results are saved files that downstream apps can use, not throwaway chat text |
+| 🧰 | **Ops runbooks** | Follows a skill step by step and calls tools through MCP | The same steps run every time, so outcomes are consistent and auditable, and there's no orchestration code to maintain |
+| 🎧 | **Support agents** | Combines knowledge, tools and per-conversation context | Answers stay grounded and in context across turns, so fewer cases get escalated |
+| 🤝 | **Multi-step work** | Plans, delegates to subagents and checks its own results | Complex tasks finish in one request; you get the agent loop without writing it |
 
 ---
 
