@@ -146,8 +146,6 @@ You *can* build most of these with a plain prompt agent or a hosted agent. The h
 | File | Purpose |
 |---|---|
 | [`copilot_harness_learning.ipynb`](copilot_harness_learning.ipynb) | **Runnable notebook** following the official Learn flow: SKILL.md → azure.yaml → `azd deploy` → invoke (azd and SDK) → refine and redeploy → optional cleanup |
-| [`copilot_harness_slides.html`](copilot_harness_slides.html) | Animated 9-slide deck explaining why the harness matters and when to use it. Open it in a browser and use ← / → to move between slides |
-| [`copilot_harness_slides_detailed.html`](copilot_harness_slides_detailed.html) | Detailed 20-slide learning edition that explains each concept (agent loop, sandbox, shell, skills, tools, guardrails) with examples and takeaways. Includes a **Read all** study mode and prints cleanly to PDF |
 | [`build_notebook.py`](build_notebook.py) | Generates the notebook. Edit this file, then re-run it |
 | [`assets/how-it-works.svg`](assets/how-it-works.svg) | The animated diagram above |
 | [`.env.example`](.env.example) | Template for your Foundry project settings |

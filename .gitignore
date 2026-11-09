@@ -6,3 +6,6 @@ agents/
 .azure/
 __pycache__/
 .DS_Store
+
+# Slide decks stay local; they may contain customer information
+copilot_harness_slides*.html
