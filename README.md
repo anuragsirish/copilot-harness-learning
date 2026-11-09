@@ -146,7 +146,6 @@ You *can* build most of these with a plain prompt agent or a hosted agent. The h
 | File | Purpose |
 |---|---|
 | [`copilot_harness_learning.ipynb`](copilot_harness_learning.ipynb) | **Runnable notebook** following the official Learn flow: SKILL.md → azure.yaml → `azd deploy` → invoke (azd and SDK) → refine and redeploy → optional cleanup |
-| [`build_notebook.py`](build_notebook.py) | Generates the notebook. Edit this file, then re-run it |
 | [`assets/how-it-works.svg`](assets/how-it-works.svg) | The animated diagram above |
 | [`.env.example`](.env.example) | Template for your Foundry project settings |
 

@@ -9,3 +9,6 @@ __pycache__/
 
 # Slide decks stay local; they may contain customer information
 copilot_harness_slides*.html
+
+# Local authoring script that generates the notebook
+build_notebook.py
