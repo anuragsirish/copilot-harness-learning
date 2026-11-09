@@ -264,6 +264,7 @@ run(f'azd ai agent invoke --new-conversation --no-prompt "{QUESTION}"', cwd=AGEN
 md("""
 ### 5b · With the Python SDK (`azure-ai-projects`)
 Important: call the **agent-scoped** endpoint by passing `get_openai_client(agent_name=...)`. The project-level Responses endpoint returns HTTP 400 for harness agents.
+This example researches the latest Microsoft Foundry releases using official sources and distinguishes generally available features from previews.
 """)
 code(r'''
 from azure.ai.projects import AIProjectClient
@@ -278,7 +279,7 @@ def ask(question):
     tool_calls = [getattr(o, "type", "?") for o in response.output]
     return response, tool_calls
 
-response, tool_calls = ask("Research brief: latest stable Python release, its release date, and two notable changes. Cite python.org.")
+response, tool_calls = ask("Research brief: What are the latest Microsoft Foundry releases and feature announcements as of today? State the research date and prioritize up to five updates from the last 30 days. For each, include the announcement date, what changed, why it matters, and whether it is generally available or preview. Use web search and cite official Microsoft release notes, Microsoft Learn, or Microsoft announcement posts. If fewer updates can be verified in that window, say so; do not invent release versions or availability.")
 print("Output item types:", tool_calls, "\n")
 print(response.output_text)
 ''')
@@ -287,6 +288,7 @@ md("""
 ## 6 · Refine and redeploy
 Does it meet expectations? If it doesn't, update `SKILL.md` or `azure.yaml` and **redeploy**. Here we add a rule to the skill, then check that the new
 behavior appears.
+The follow-up request focuses on recent Foundry Agent Service and Copilot harness updates.
 """)
 code(r'''
 refined = SKILL_MD.rstrip() + "\n   - **Confidence**: finish with a line `Confidence: High|Medium|Low` and a one-line reason\n"
@@ -294,7 +296,7 @@ refined = SKILL_MD.rstrip() + "\n   - **Confidence**: finish with a line `Confid
 
 run("azd deploy --all --no-prompt", cwd=AGENT_DIR)
 
-response, tool_calls = ask("Research brief: what is Azure Developer CLI (azd) and what is its latest release version? Use official sources.")
+response, tool_calls = ask("Research brief: What are the latest Microsoft Foundry Agent Service and Copilot harness releases or feature updates as of today? State the research date and prioritize verified announcements from the last 30 days. Explain changes to tools, skills, sandbox execution, or agent development when documented. Include announcement dates, GA versus preview status, and documented region or model restrictions. Use web search and cite official Microsoft sources. Explicitly flag details that cannot be verified and do not describe older features as new releases.")
 print("Output item types:", tool_calls, "\n")
 print(response.output_text)
 print("\nRefinement applied:", "✅" if "confidence" in response.output_text.lower() else "❌ (iterate on the skill wording)")

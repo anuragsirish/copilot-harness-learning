@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copilot Harness Explained - Detailed Learning Slides</title>
+<style>
+  :root{--cream:#fffaf2;--stone:#f5efe6;--ink:#3b2416;--muted:#715e50;--orange:#b8420b;--rose:#be123c;--line:#ead9c4}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Arial,sans-serif;line-height:1.55}
+  header{position:sticky;top:0;z-index:2;background:var(--cream);border-bottom:1px solid var(--line);padding:.8rem 4vw;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  header strong{font-size:.95rem}
+  button,select{font:inherit;color:var(--ink);background:white;border:1px solid #c8ae92;border-radius:8px;padding:.45rem .7rem}
+  button{cursor:pointer}button:disabled{opacity:.45;cursor:default}
+  :focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+  nav{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  select{max-width:min(36vw,340px)}
+  main{max-width:1280px;margin:auto}
+  .slide{padding:3rem 5vw 2rem;min-height:calc(100vh - 150px)}
+  .slide[hidden]{display:none}
+  .kicker{color:var(--orange);text-transform:uppercase;letter-spacing:.13em;font-weight:700;font-size:.8rem}
+  h1{font-size:clamp(2rem,4vw,3.3rem);line-height:1.12;max-width:23ch;margin:.7rem 0 1.2rem}
+  h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.2;margin:.6rem 0 1rem}
+  h3{font-size:1.15rem;margin:0 0 .6rem}
+  p{margin:.5rem 0 1rem}
+  .lead{font-size:1.15rem;max-width:85ch;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem;margin:1.5rem 0}
+  .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:1.3rem}
+  .card p,.card li{color:var(--muted)}
+  ul,ol{padding-left:1.3rem;margin:.5rem 0}li{margin:.45rem 0}
+  .example,.takeaway{border-radius:12px;padding:1rem 1.2rem;margin:1.1rem 0}
+  .example{background:var(--stone);border:1px solid var(--line)}
+  .takeaway{background:#fff1df;border-left:4px solid var(--orange)}
+  .label{display:block;color:var(--orange);font-size:.8rem;font-weight:750;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em;overflow-wrap:anywhere}
+  pre{background:#fff7ed;border:1px solid var(--line);border-radius:12px;padding:1.1rem;overflow:auto;line-height:1.55}
+  pre code{overflow-wrap:normal}
+  a{color:var(--orange);text-underline-offset:3px}
+  table{width:100%;border-collapse:collapse;background:#fff;margin:1.2rem 0}
+  caption{text-align:left;font-weight:bold;margin-bottom:.5rem}
+  th,td{padding:.8rem;border:1px solid var(--line);text-align:left;vertical-align:top}th{background:#fff1df}
+  footer{padding:1rem 4vw;color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between;gap:1rem}
+  .sources{font-size:.9rem;color:var(--muted)}
+  #progress{height:4px;background:#ead9c4}#progress span{display:block;height:100%;background:linear-gradient(90deg,#ea580c,#be123c);width:0}
+  body.all .slide{display:block!important;min-height:0;border-bottom:2px solid var(--line)}
+  @media(max-width:760px){header{position:static;align-items:flex-start;flex-direction:column}.grid,.three{grid-template-columns:1fr}.slide{padding:1.5rem 5vw}select{max-width:65vw}footer{flex-direction:column}table{font-size:.85rem}th,td{padding:.5rem}}
+  @media print{header,#progress,footer{display:none}.slide,.slide[hidden]{display:block!important;min-height:0;padding:1cm 0;break-before:page}.slide:first-child{break-before:auto}.card,.takeaway,.example,pre{break-inside:avoid}body{background:white;font-size:10pt}h1{font-size:28pt}h2{font-size:23pt}a{color:inherit}.grid{gap:.5cm}}
+</style>
+</head>
+<body>
+<header>
+  <strong>Copilot Harness / Detailed learning edition</strong>
+  <nav aria-label="Slide navigation">
+    <button id="prev" aria-label="Previous slide">Previous</button>
+    <label for="jump">Slide</label><select id="jump"></select>
+    <button id="next" aria-label="Next slide">Next</button>
+    <button id="mode" aria-pressed="false">Read all</button>
+  </nav>
+</header>
+<div id="progress" aria-hidden="true"><span></span></div>
+<main>
+  <section class="slide">
+    <div class="kicker">01 / Start here</div>
+    <h1>The Copilot harness, explained one piece at a time</h1>
+    <p class="lead">A companion to the shorter presentation. This version explains what the terms mean, how they fit together, and what happened when you ran the notebook against Microsoft Foundry.</p>
+    <div class="grid">
+      <article class="card"><h3>What you will understand</h3><p>The difference between a model, an agent, and a harness; how the agent loop uses tools; and why a sandbox, shell, files, and permissions matter.</p></article>
+      <article class="card"><h3>How to use these slides</h3><p>Read the explanation, then the example and takeaway. Use Previous / Next or the arrow keys. Select Read all for a continuous study guide, or print to PDF from your browser.</p></article>
+    </div>
+    <div class="takeaway"><span class="label">The central idea</span>You define the agent's job and capabilities. The managed harness provides the runtime that carries out the multi-step work.</div>
+    <p class="sources">Companions: <a href="./copilot_harness_slides.html">original concise slides</a> and <a href="./copilot_harness_learning.ipynb">runnable notebook</a>. Preview behavior can change; official references are on the final slide.</p>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">02 / Vocabulary</div><h2>Model, agent, and harness are different things</h2>
+    <div class="grid three">
+      <article class="card"><h3>Model</h3><p>The AI system that interprets the request and produces text or proposed tool calls. It does not automatically have access to your computer or business systems.</p></article>
+      <article class="card"><h3>Agent</h3><p>A configured system built around a model: instructions, tools, skills, and a way to continue working toward a goal using the results of its actions.</p></article>
+      <article class="card"><h3>Harness</h3><p>The runtime around the model. It coordinates the repeated model calls, tool execution, conversation context, and execution environment.</p></article>
+    </div>
+    <div class="example"><span class="label">Example</span>For "Research this topic and write a brief," the model proposes what to search. The configured agent has the research instructions and search tool. The harness executes tool calls and returns results to the model.</div>
+    <div class="takeaway"><span class="label">Remember</span>The model proposes the next step. The harness coordinates execution. Your agent definition determines the intended behavior and available capabilities.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">03 / Why it matters</div><h2>A useful agent often needs more than one model response</h2>
+    <p class="lead">A single model call can answer a question. A research or analysis task may require searching, comparing evidence, processing a file, checking the result, and then writing an answer.</p>
+    <div class="grid">
+      <article class="card"><h3>Without a managed harness</h3><p>Your application must coordinate those steps: call the model, interpret requested actions, execute tools, append results, handle failures, and decide when to stop.</p></article>
+      <article class="card"><h3>With the Copilot harness</h3><p>Foundry manages the agent runtime and supported execution capabilities. You focus on the instructions, skills, model deployment, tools, and access the task requires.</p></article>
+    </div>
+    <div class="example"><span class="label">Example</span>"What is the latest release?" requires current evidence. The agent can search official sources, read the results, resolve conflicting dates, and then respond with citations.</div>
+    <div class="takeaway"><span class="label">What is not automatic</span>A managed runtime does not guarantee factual accuracy, correct permissions, low cost, or a good answer. Those still require configuration and testing.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">04 / Agent loop</div><h2>The loop is a repeated decision-and-action cycle</h2>
+    <ol>
+      <li><strong>Receive the goal:</strong> combine the user's request with instructions and available context.</li>
+      <li><strong>Ask the model for the next step:</strong> it may produce an answer or request a tool call.</li>
+      <li><strong>Execute an allowed tool:</strong> the runtime runs the action and collects its result or error.</li>
+      <li><strong>Return the observation:</strong> the model receives the result and decides what to do next.</li>
+      <li><strong>Continue or stop:</strong> finish with an answer, or stop when runtime limits or an error prevent further progress.</li>
+    </ol>
+    <div class="example"><span class="label">Research loop</span>Request &rarr; search official sources &rarr; inspect results &rarr; notice a missing date &rarr; search again &rarr; write a cited brief.</div>
+    <div class="takeaway"><span class="label">Important distinction</span>The agent loop is not necessarily a fixed workflow. The next action can depend on the result of the previous action. Do not assume it will run forever until the task succeeds.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">05 / Sandbox</div><h2>The sandbox is used during the loop, not after it</h2>
+    <p class="lead">A sandbox is a service-managed, isolated execution environment for operations such as working with files and running commands. It provides a controlled place for supported actions to happen.</p>
+    <div class="grid">
+      <article class="card"><h3>How the loop uses it</h3><p>When the agent requests an execution action, the harness can run it in the sandbox, then return the output to the model as another observation in the loop.</p></article>
+      <article class="card"><h3>Why isolation matters</h3><p>A command should not receive unrestricted access to the host machine. Isolation limits exposure, but it does not replace permissions, network controls, or approval requirements for external actions.</p></article>
+    </div>
+    <div class="example"><span class="label">Example</span>An agent reads a CSV, runs a script to calculate totals, notices an invalid row, revises the script, and writes a report. Several loop iterations may use the same conversation workspace.</div>
+    <div class="takeaway"><span class="label">Mental model</span>The loop coordinates the work. The sandbox is an isolated place to perform execution work. A simple question-answering agent may not need shell or code execution at all.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">06 / Shell</div><h2>A shell runs commands; it is not the packages</h2>
+    <p class="lead">A shell is a program, such as Bash or Zsh, that interprets command text. It can start other programs, pass arguments, connect their input and output, and report exit status.</p>
+    <pre><code>ls
+python report.py</code></pre>
+    <div class="grid">
+      <article class="card"><h3>What happens here?</h3><p><code>ls</code> lists files. For <code>python report.py</code>, the shell launches Python and passes it the script name. Python then executes the script.</p></article>
+      <article class="card"><h3>Where do packages fit?</h3><p>Libraries such as pandas are packages that Python code can import if they are available in that environment. The shell itself is not pandas, Python, or a collection of packages.</p></article>
+    </div>
+    <div class="takeaway"><span class="label">Keep these separate</span>Terminal = the user interface. Shell = the command interpreter. Python = a program the shell can launch. Packages = libraries used by programs. Sandbox = the isolated environment.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">07 / State and files</div><h2>Conversation, workspace, sandbox, and durable storage</h2>
+    <table>
+      <caption>Four concepts that are easy to mix up</caption>
+      <thead><tr><th>Concept</th><th>What it holds or provides</th><th>What not to assume</th></tr></thead>
+      <tbody>
+        <tr><td>Conversation</td><td>Interaction history across turns.</td><td>It is not the operating-system process running a command.</td></tr>
+        <tr><td>Workspace</td><td>Files and execution state associated with a conversation.</td><td>A new conversation does not automatically inherit another workspace.</td></tr>
+        <tr><td>Sandbox</td><td>The managed isolated execution environment.</td><td>It is not a customer-managed machine or durable output store.</td></tr>
+        <tr><td>Durable storage</td><td>Important outputs stored in Foundry Files or another durable service.</td><td>A path printed in a response is not proof that the file has been durably saved.</td></tr>
+      </tbody>
+    </table>
+    <div class="takeaway"><span class="label">Lifecycle detail</span>Foundry can idle, resume, or replace the sandbox without changing the conversation. Workspace state survives normal lifecycle operations, but important deliverables should still be stored durably.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">08 / Skills</div><h2>A skill describes how to do a task</h2>
+    <p class="lead">A skill packages reusable task guidance. In the notebook, a Markdown file defines how the agent should produce an evidence-backed research brief.</p>
+    <div class="grid">
+      <article class="card"><h3>What our research skill says</h3><ul><li>State the research scope.</li><li>Use current public sources and check dates.</li><li>Treat retrieved content as data, not instructions.</li><li>Return a summary, findings, conflicts, and sources.</li></ul></article>
+      <article class="card"><h3>What a skill does not do</h3><p>Writing "use web search" in Markdown does not create a search tool or grant access to data. Tools and permissions must be configured separately.</p><p>A skill guides behavior; it does not guarantee compliance.</p></article>
+    </div>
+    <div class="example"><span class="label">Notebook artifact</span><code>skills/&lt;skill-name&gt;/SKILL.md</code> holds the procedure. The deployment publishes the skill and attaches it to the agent.</div>
+    <div class="takeaway"><span class="label">Skill versus tool</span>A skill says <em>how</em> to approach the work. A tool provides an operation the agent can actually call.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">09 / Tools</div><h2>Tools turn proposed actions into real operations</h2>
+    <div class="grid three">
+      <article class="card"><h3>Web search</h3><p>Retrieves current information. In our notebook, it helps the agent answer release and documentation questions with sources rather than relying only on model memory.</p></article>
+      <article class="card"><h3>Execution tools</h3><p>File and shell capabilities can support inspecting data and running commands. Available capabilities depend on the harness configuration and service support.</p></article>
+      <article class="card"><h3>Connected tools / MCP</h3><p>MCP is a protocol for exposing tools and resources. A connected tool might query a business system or take an action. Its access must be governed separately.</p></article>
+    </div>
+    <div class="example"><span class="label">Read versus write</span>"Search public documentation" and "update a customer record" are both tool operations, but have very different consequences. Grant only the capabilities the task needs.</div>
+    <div class="takeaway"><span class="label">For this demo</span>The agent definition explicitly includes <code>web_search</code> and a Copilot toolset configuration. Subagents are disabled in the demo; that setting is not a claim that the harness never supports them.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">10 / Context and delegation</div><h2>Context helps the next step; subagents split work</h2>
+    <div class="grid">
+      <article class="card"><h3>Context</h3><p>The information available to the model for a decision: instructions, conversation history, relevant skill guidance, and tool results.</p><p>Large conversations and tool outputs can reach limits. Context management is not the same as unlimited memory or guaranteed recall.</p></article>
+      <article class="card"><h3>Subagents</h3><p>Delegated workers can handle bounded pieces of a larger task when enabled and appropriate. Their results still need to be combined and checked.</p><p>Delegation can add latency and cost. It is not necessary for every task.</p></article>
+    </div>
+    <div class="example"><span class="label">Example, not this demo's configuration</span>A broader research task could delegate two independent topics, then combine the findings. Our notebook keeps subagents off so the demonstration is simpler.</div>
+    <div class="takeaway"><span class="label">Remember</span>Context answers "What information can the model use now?" Delegation answers "Can a separate worker handle part of this task?"</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">11 / Responsibilities</div><h2>Microsoft operates the runtime; you own the agent's design</h2>
+    <div class="grid">
+      <article class="card"><h3>The managed service provides</h3><ul><li>The supported agent loop and tool orchestration.</li><li>Conversation workspace and sandbox lifecycle.</li><li>Supported built-in capabilities and integration points.</li><li>Platform identity and governance mechanisms.</li></ul></article>
+      <article class="card"><h3>You still configure and verify</h3><ul><li>The job, instructions, skills, and model deployment.</li><li>Which tools are enabled and what they can access.</li><li>User and agent roles, data access, and approvals.</li><li>Answer quality, operational limits, costs, and failure handling.</li></ul></article>
+    </div>
+    <div class="example"><span class="label">Analogy</span>A managed kitchen supplies equipment and operating infrastructure. You still choose the recipe, permitted ingredients, and the checks before serving the result.</div>
+    <div class="takeaway"><span class="label">Do not confuse managed with automatic</span>Managing the runtime removes infrastructure work. It does not remove responsibility for the agent's behavior or the consequences of its tools.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">12 / Build step 1</div><h2>Start with the task and an existing Foundry project</h2>
+    <p class="lead">The notebook follows the existing-project path. It reads local configuration, identifies a model deployment, and uses a stable agent name so reruns publish versions rather than inventing a new name each time.</p>
+    <div class="grid">
+      <article class="card"><h3>Configuration inputs</h3><p>Azure subscription, resource group, Foundry account and project, and the model deployment name. Keep environment-specific values in local configuration rather than copying credentials into slides or code.</p></article>
+      <article class="card"><h3>Prerequisites</h3><p>A supported project region and a model that supports reasoning and tool calling. The notebook checks the Azure Developer CLI, Foundry extensions, and authentication status.</p></article>
+    </div>
+    <div class="example"><span class="label">What gets created?</span>This walkthrough publishes a skill and agent versions into the configured project. It does not intentionally create a new Foundry account or model deployment. Agent invocations can still incur usage charges.</div>
+    <div class="takeaway"><span class="label">Before running elsewhere</span>Confirm the destination project, permissions, model deployment, preview availability, and expected costs. Region and model support should be checked in the current documentation.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">13 / Build step 2</div><h2>The YAML definition wires capabilities together</h2>
+    <p class="lead">The project configuration describes the agent and its dependencies. The following is a conceptual excerpt, not a complete deployable project.</p>
+    <pre><code>kind: prompt
+harness:
+  type: microsoft_copilot_preview
+skills:
+  - &lt;research-skill-service&gt;
+tools:
+  - type: web_search</code></pre>
+    <div class="grid">
+      <article class="card"><h3>What these fields mean</h3><p><code>kind</code> selects a prompt agent. <code>harness</code> selects its managed runtime. <code>skills</code> attaches the research procedure. <code>tools</code> declares callable capabilities.</p></article>
+      <article class="card"><h3>What else the real file contains</h3><p>The service host, project dependency, model, instructions, skill service packaging, and built-in toolset configuration. Use the notebook's complete configuration instead of pasting this excerpt alone.</p></article>
+    </div>
+    <div class="takeaway"><span class="label">Preview constraint</span>The harness is chosen when the agent is created. Publishing another version does not switch an existing agent from another runtime to this harness.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">14 / Build step 3</div><h2>Deploy, inspect the definition, then invoke</h2>
+    <pre><code>azd deploy --all --no-prompt
+azd ai agent show --output json
+azd ai agent invoke --new-conversation --no-prompt "Research brief: ..."</code></pre>
+    <p class="sources">Run inside the generated agent project with its environment configured and the documented harness preview flag enabled. These commands illustrate the steps already present in the notebook.</p>
+    <div class="grid three">
+      <article class="card"><h3>Deploy</h3><p>Publish the declared skill and agent configuration. A successful deployment creates immutable versions; it is not evidence that the final answer is good.</p></article>
+      <article class="card"><h3>Inspect</h3><p>Confirm the published definition contains the prompt kind, the Copilot harness discriminator, the skill, and web search.</p></article>
+      <article class="card"><h3>Invoke</h3><p>Send a real request and inspect the response. A new conversation starts separate history and workspace state for the test.</p></article>
+    </div>
+    <div class="takeaway"><span class="label">Why all three?</span>Deployment tests publication. Inspection tests configuration. Invocation tests whether the deployed agent can actually perform the task.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">15 / Your notebook run</div><h2>What we verified by running against Foundry</h2>
+    <div class="grid">
+      <article class="card"><h3>Execution and definition checks</h3><ul><li>All 10 code cells executed without a recorded cell error.</li><li>The agent definition checks passed for prompt kind, Copilot harness, attached skill, and web search.</li><li>Deployment and invocation cells completed.</li></ul></article>
+      <article class="card"><h3>Behavior exercised</h3><ul><li>A CLI research request about the Copilot harness.</li><li>A Python SDK research request about a Python release.</li><li>A skill refinement, redeployment, and another SDK request.</li><li>A check that the refined response included "confidence."</li></ul></article>
+    </div>
+    <div class="example"><span class="label">Where the evidence lives</span>The executed notebook contains saved cell outputs. Cleanup was disabled, so the agent and skill were left deployed in the configured project.</div>
+    <div class="takeaway"><span class="label">What we did not prove</span>A passing cell and a confidence keyword do not prove every citation is correct, the answer is comprehensive, or the agent is production-ready. Review the actual outputs against your task requirements.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">16 / Refinement loop</div><h2>Improve the instructions, then test a new version</h2>
+    <ol>
+      <li><strong>Find a concrete gap:</strong> for example, the brief does not state uncertainty.</li>
+      <li><strong>Refine the skill:</strong> ask for a confidence level and a short explanation.</li>
+      <li><strong>Redeploy:</strong> publish the updated skill and agent configuration.</li>
+      <li><strong>Test with a fresh conversation:</strong> avoid carrying over earlier conversation instructions or workspace state.</li>
+      <li><strong>Evaluate the result:</strong> check evidence quality and uncertainty, not just the presence of a heading.</li>
+    </ol>
+    <div class="example"><span class="label">Notebook example</span>The skill was extended to request <code>Confidence: High|Medium|Low</code> with a reason. The response included a confidence reference, so the notebook's simple refinement check passed.</div>
+    <div class="takeaway"><span class="label">Two different loops</span>The agent loop happens inside a request. The development loop is your process of changing instructions, redeploying, and evaluating behavior over multiple tests.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">17 / Use cases</div><h2>Match each capability to a real job</h2>
+    <table>
+      <caption>Illustrative use cases, not capabilities all enabled by the demo</caption>
+      <thead><tr><th>Job</th><th>Why the harness helps</th><th>What to check</th></tr></thead>
+      <tbody>
+        <tr><td>Research brief</td><td>Search, inspect evidence, compare sources, produce a structured response.</td><td>Dates, source quality, citations, and conflicting claims.</td></tr>
+        <tr><td>Data analysis</td><td>Inspect a file, execute calculations, review results, create an output.</td><td>Data privacy, calculation correctness, and durable output storage.</td></tr>
+        <tr><td>Document processing</td><td>Read content and apply a repeatable skill to extract or summarize it.</td><td>File support, missing content, and accuracy against the source.</td></tr>
+        <tr><td>Support or operations</td><td>Combine a runbook with connected tools for multi-step investigation.</td><td>Read/write permissions, approval requirements, and safe failure behavior.</td></tr>
+      </tbody>
+    </table>
+    <div class="takeaway"><span class="label">Practical starting point</span>Begin with a narrow, read-only task and measurable success criteria. Add write actions or broader access only when the task needs them.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">18 / Decision guide</div><h2>When to choose this harness, and when not to</h2>
+    <div class="grid">
+      <article class="card"><h3>Consider the managed harness when</h3><ul><li>The task benefits from multi-step tool use, file work, or code execution.</li><li>You want a managed runtime rather than writing your own orchestration.</li><li>The available models, tools, regions, and preview terms fit the workload.</li></ul></article>
+      <article class="card"><h3>Consider another approach when</h3><ul><li>A single model call or simpler agent is enough.</li><li>You need full control over custom orchestration, runtime dependencies, or application code.</li><li>You require a GA SLA or capabilities not supported by this preview, such as BYOM.</li></ul></article>
+    </div>
+    <div class="example"><span class="label">Prompt versus hosted</span>This harness is a runtime choice for a prompt agent. A hosted agent is an alternative for running your own agent application code. "Prompt agent" and "Copilot harness" are not mutually exclusive categories.</div>
+    <div class="takeaway"><span class="label">Preview caution</span>Microsoft documents this preview without an SLA and does not recommend it for production workloads. Validate current service terms rather than treating a successful demo as a production approval.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">19 / Guardrails</div><h2>Isolation is one control, not the whole security model</h2>
+    <div class="grid three">
+      <article class="card"><h3>Limit execution</h3><p>Enable only required shell and tool capabilities. A sandbox is not permission to run arbitrary commands or give the agent credentials it does not need.</p></article>
+      <article class="card"><h3>Separate identities</h3><p>Your user identity and the agent's identity can need different role assignments. A successful deployment under your account does not prove the agent can access a resource.</p></article>
+      <article class="card"><h3>Control data movement</h3><p>Check what can leave the environment through search, tools, uploads, and network calls. Confirm the supported controls before handling sensitive data.</p></article>
+      <article class="card"><h3>Treat content as data</h3><p>Web pages and documents may contain malicious instructions. Retrieved text should not override the agent's task, policies, or access boundaries.</p></article>
+      <article class="card"><h3>Gate consequential actions</h3><p>For write tools and external side effects, configure supported approvals or application-level confirmation. Do not assume every tool call prompts for approval automatically.</p></article>
+      <article class="card"><h3>Inspect and test</h3><p>Use available traces and outputs to examine tool behavior. Test failures and permission denials, and do not claim success when a required operation failed.</p></article>
+    </div>
+    <div class="takeaway"><span class="label">Example</span>A sandbox may isolate a script from its host, but an authorized external tool can still modify real business data. That action needs its own permission and approval controls.</div>
+  </section>
+
+  <section class="slide" hidden>
+    <div class="kicker">20 / Recap and references</div><h2>Explain it back in six sentences</h2>
+    <ol>
+      <li>The <strong>model</strong> interprets the request and proposes an answer or action.</li>
+      <li>The <strong>harness</strong> coordinates the runtime around that model.</li>
+      <li>The <strong>agent loop</strong> repeats model decisions and tool observations.</li>
+      <li>The <strong>sandbox</strong> isolates supported execution work during that loop.</li>
+      <li>The <strong>shell</strong> interprets commands; programs launched by it may use packages.</li>
+      <li><strong>Skills</strong> guide the task, while tools and permissions determine what operations are available.</li>
+    </ol>
+    <div class="example"><span class="label">Check your understanding</span>For "Analyze this CSV and write a report," identify the instructions, tools, execution environment, output file, and required access. Then explain why creating the report is different from emailing it to someone.</div>
+    <div class="sources">
+      <strong>Official references</strong>
+      <ul>
+        <li><a href="https://learn.microsoft.com/azure/foundry/agents/how-to/use-tools-skills-copilot-harness">Use the Microsoft Copilot harness with prompt agents</a> - runtime, workspace lifecycle, prerequisites, and configuration.</li>
+        <li><a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/create-web-research-agent?pivots=azd">Create a web research agent with azd</a> - the walkthrough behind the notebook.</li>
+        <li><a href="https://learn.microsoft.com/azure/foundry/agents/concepts/limits-quotas-regions#microsoft-copilot-harness-preview">Limits, quotas, and supported regions</a> - check current availability before deployment.</li>
+      </ul>
+      <p>Learning edition prepared November 9, 2026. Product-specific runtime and preview explanations checked against the Microsoft Learn harness guide. Local run details describe this notebook execution, not a general service guarantee.</p>
+    </div>
+  </section>
+</main>
+<footer><span id="status" role="status" aria-live="polite"></span><span>Arrow keys: navigate &middot; Home / End: first / last &middot; Read all: study mode</span></footer>
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const jump = document.getElementById('jump');
+  const previous = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const mode = document.getElementById('mode');
+  let index = 0;
+  slides.forEach((slide, position) => {
+    const option = document.createElement('option');
+    option.value = position;
+    option.textContent = `${position + 1}. ${slide.querySelector('h1,h2').textContent}`;
+    jump.append(option);
+  });
+  function show(position, scroll = true) {
+    index = Math.max(0, Math.min(slides.length - 1, position));
+    slides.forEach((slide, position) => {
+      slide.hidden = position !== index;
+      slide.setAttribute('aria-label', `Slide ${position + 1} of ${slides.length}`);
+    });
+    jump.value = String(index);
+    previous.disabled = index === 0;
+    next.disabled = index === slides.length - 1;
+    document.getElementById('status').textContent = `Slide ${index + 1} of ${slides.length}`;
+    document.querySelector('#progress span').style.width = `${(index + 1) / slides.length * 100}%`;
+    history.replaceState(null, '', `#${index + 1}`);
+    if (scroll) {
+      if (document.body.classList.contains('all')) slides[index].scrollIntoView({block:'start'});
+      else window.scrollTo(0, 0);
+    }
+  }
+  previous.addEventListener('click', () => show(index - 1));
+  next.addEventListener('click', () => show(index + 1));
+  jump.addEventListener('change', () => show(Number(jump.value)));
+  mode.addEventListener('click', () => {
+    const all = document.body.classList.toggle('all');
+    mode.textContent = all ? 'Slide view' : 'Read all';
+    mode.setAttribute('aria-pressed', String(all));
+    show(index);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+        event.target.closest('button,select,input,textarea,a,[contenteditable="true"]') ||
+        document.body.classList.contains('all')) return;
+    const moves = {ArrowRight:index + 1, PageDown:index + 1, ArrowLeft:index - 1, PageUp:index - 1, Home:0, End:slides.length - 1};
+    if (Object.hasOwn(moves, event.key)) {
+      event.preventDefault();
+      show(moves[event.key]);
+    }
+  });
+  function fromHash() {
+    const value = Number(location.hash.slice(1));
+    show(Number.isInteger(value) && value > 0 ? value - 1 : 0, false);
+  }
+  addEventListener('hashchange', fromHash);
+  fromHash();
+</script>
+</body>
+</html>
