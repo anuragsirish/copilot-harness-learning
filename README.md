@@ -1,7 +1,7 @@
 # Microsoft Copilot Harness in Foundry: Learning Kit
 
 > **Write a skill in Markdown, wire it up in YAML, run `azd deploy`, and you get a production-shaped agent.**
-> The **Microsoft Copilot harness** is the managed runtime that Microsoft Foundry runs *around* your prompt agent: the agent loop, a sandbox, context, files and tool orchestration. You don't have to build any of it.
+> The **Microsoft Copilot harness** is the managed runtime that Microsoft Foundry runs *around* your prompt agent: the agent loop, a sandbox with a per-conversation workspace, built-in file, shell, web-fetch and subagent tools, and tool orchestration. You don't have to build any of it.
 
 <p align="center">
   <img src="assets/how-it-works.svg" alt="Animated diagram: your app calls the agent endpoint; the Copilot harness runs the agent loop, delegates to subagents, and uses a sandbox, then calls the model, tools and Foundry Files, all under Foundry governance (Entra ID and RBAC, guardrails and egress rules, versions, traces)" width="100%">
@@ -40,10 +40,10 @@ Building a real agent usually means writing and running all of this yourself:
 |---|---|
 | A loop that plans → calls tools → reads results → repeats | 🔁 **Agent loop** |
 | A safe place to create files and run shell or code | 📦 **Isolated sandbox** for each conversation |
-| Conversation memory and context-window management | 🧠 **Context management** |
+| Somewhere to keep working state (notes, intermediate files) across turns | 🗂️ **Per-conversation workspace**. Conversation history itself is managed by Foundry for *every* prompt agent, with or without the harness |
 | Delegation to helper agents | 🤝 **Subagents** |
 | Storage for outputs the agent creates | 📁 **Foundry Files** (agent identity) |
-| Auth, RBAC, tracing and evaluation hooks | 🛡️ **Foundry governance** |
+| Auth, RBAC, tracing and evaluation hooks | 🛡️ **Foundry governance**, the same as for any prompt agent (the harness doesn't change it) |
 
 **You bring only three things:**
 

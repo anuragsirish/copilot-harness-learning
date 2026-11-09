@@ -27,11 +27,11 @@ This notebook walks through the official Microsoft Learn flow, step by step and 
 
 ### What is the Copilot harness?
 The **harness** is the managed runtime that Foundry runs *around* your prompt agent. It handles the agent loop, an isolated per-conversation
-**sandbox** (files and shell), context, subagents and tool orchestration. **You bring** the instructions, skills and tools.
+**sandbox** (files and shell) with its workspace, subagents and tool orchestration. **You bring** the instructions, skills and tools.
 
 | Microsoft runs | You bring |
 |---|---|
-| Agent loop · Sandbox · Context · Files & code · Subagents | Skills · Tools · Instructions |
+| Agent loop · Sandbox + workspace · Files & shell · Web fetch · Subagents | Skills · Tools · Instructions |
 
 > ⚠️ **Preview.** The harness is chosen **when the agent is created** and can't be switched later. Only regions such as Sweden Central, East US and
 > Canada Central support it, and the model must support reasoning and tool calling.
