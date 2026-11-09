@@ -186,6 +186,10 @@ code copilot_harness_learning.ipynb   # or: jupyter lab
 
 > 💸 Running the notebook **deploys a real agent and skill** to your project. Set `CLEANUP = True` in the last section to delete them afterwards.
 
+## 🙏 Credits
+
+The notebook's research skill adapts the core steps of Microsoft's [quickstart-web-research sample](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness/quickstart-web-research) from [microsoft-foundry/foundry-samples](https://github.com/microsoft-foundry/foundry-samples) (MIT License). Everything else in this repo is original.
+
 ## 📚 Learn more
 
 - [Use the Microsoft Copilot harness with prompt agents](https://learn.microsoft.com/azure/foundry/agents/how-to/use-tools-skills-copilot-harness)
