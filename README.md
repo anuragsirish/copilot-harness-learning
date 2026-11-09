@@ -75,14 +75,25 @@ azd ai agent invoke --new-conversation "Give me a research brief on <topic>"
 
 ## 💡 Example use cases
 
-| | Use case | What the harness adds | Why the harness, not a plain prompt agent or a hosted agent |
+### From Microsoft (Learn and the official samples)
+
+MS Learn describes the harness as being for *"multi-step tool, skill, file, or command workflows"*. Microsoft's [official harness samples](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness) show what that looks like:
+
+| | Official sample | What it shows | Why the harness, not a plain prompt agent or a hosted agent |
 |---|---|---|---|
-| 🔎 | **Research briefs** | Web search, then a structured, cited write-up | A plain prompt agent can search, but the harness also **fetches and works through full pages** with the Web tool and file system, and follows a skill's steps. A hosted agent would mean writing that loop yourself |
-| 📊 | **Data analysis** | Reads uploaded CSVs and runs code in the sandbox to build charts and stats | Uploaded files are **ready in a per-conversation workspace**, and the agent runs **shell commands** on them and returns charts as files. A hosted agent would need your own isolated compute for running untrusted code |
-| 📄 | **Document processing** | Extracts, transforms and saves outputs to Foundry Files | It works on files across many steps (**read → write → shell**), and outputs are saved to Foundry Files **under the agent's own identity**. A plain prompt agent mostly returns chat text |
-| 🧰 | **Ops runbooks** | Follows a skill step by step and calls tools through MCP | **Skills plus shell** run the procedure, and **network egress rules** control which hosts the harness can reach. Those rules only apply to harness agents, not plain prompt agents |
-| 🎧 | **Support agents** | Combines knowledge, tools and per-conversation context | **Each conversation gets its own workspace**, so one customer's files never touch another's, and Foundry idles and resumes it for you |
-| 🤝 | **Multi-step work** | Plans, delegates to subagents and checks its own results | **Subagents** come built in, so you get hosted-agent-style orchestration with **no framework, container or code to run** |
+| 🔎 | [**Web Research**](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness/quickstart-web-research) (the [Learn quickstart](https://learn.microsoft.com/azure/foundry/agents/quickstarts/create-web-research-agent?pivots=azd)) | Web Search plus a reusable official-sources **skill** | **For a quick cited summary, a plain prompt agent with web search is enough.** The harness pays off for *deep* research: the **Web** tool fetches **full pages**, notes are saved to files in the agent's **sandbox workspace** so many sources fit, **subagents** split up subtopics, and the brief comes back **as a file** |
+| 📧 | [**Web Research Email Digest**](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness/web-research-email-digest) | Web Search, then a **Work IQ Mail** email delivered on a daily schedule | A scheduled job runs **research → write → send** without a person in the loop. With a hosted agent you'd write and host that pipeline yourself |
+| 🌐 | [**Browser Automation Blog Research**](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness/browser-automation-blog-research) | Managed **browser sessions** (Playwright) through a toolbox | Handles sites that need real browsing (clicks, JavaScript-rendered pages) that search snippets can't cover, with no browser fleet to run |
+| 🗄️ | [**AdventureWorks SQL Analyst**](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness/adventureworks-sql-analyst) | **Read-only** SQL analysis through managed MCP connector tools, with a skill that loads instructions only as needed | Multi-step querying where the agent explores, queries and refines. Read-only tools and RBAC limit what it can touch |
+| 📊 | [**CSV Chart Analyst**](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/cli/prompt-agents/microsoft-copilot-harness/csv-chart-analyst) (linked from Learn) | The uploaded CSV is placed in the workspace, analysed with **shell**, and returned as a PNG through **Foundry Files**, *without Code Interpreter* | Shows the harness's main difference most clearly: a **per-conversation workspace, shell commands and generated files**, saved under the agent's identity |
+
+### Other patterns to consider (my suggestions, not from Microsoft docs)
+
+These fit the harness's capabilities but **aren't documented Microsoft scenarios**. Validate them before using them with customers.
+
+- 📄 **Document processing:** read → transform → write output files to Foundry Files.
+- 🧰 **Ops runbooks:** a skill encodes the procedure, MCP tools act, and egress rules limit which hosts it can reach.
+- 🤝 **Long multi-step tasks:** subagents take parts of the work in parallel.
 
 ---
 
@@ -94,7 +105,7 @@ You *can* build most of these with a plain prompt agent or a hosted agent. The h
 |---|---|---|---|
 | Authoring | Instructions + tools | **Instructions + tools + skills** (Markdown and YAML) | Your code and framework |
 | Multi-step tool loop | Tool calling with declared tools | ✅ **Managed agent loop** | You build it |
-| Per-conversation file workspace | ❌ | ✅ **Isolated, persists across turns** | You build it |
+| Per-conversation file workspace | ❌ | ✅ **Isolated, persists across turns**. This is a temporary folder in the Foundry sandbox, not your machine or SharePoint, and outputs worth keeping go to Foundry Files | You build it |
 | Shell commands and file read/write | ❌ (Code Interpreter only) | ✅ **Built-in harness tools** | You build it |
 | Subagents | ❌ | ✅ **Built in** | You build it |
 | Return generated files | Through Code Interpreter | ✅ **Uploaded to Foundry Files with the agent's identity** | You build it |
