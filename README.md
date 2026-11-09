@@ -75,18 +75,51 @@ azd ai agent invoke --new-conversation "Give me a research brief on <topic>"
 
 ## 💡 Example use cases
 
-| | Use case | What the harness adds | How this adds value |
+| | Use case | What the harness adds | Why the harness, not a plain prompt agent or a hosted agent |
 |---|---|---|---|
-| 🔎 | **Research briefs** | Web search, then a structured, cited write-up | Hours of manual research become minutes, with sources you can verify |
-| 📊 | **Data analysis** | Reads uploaded CSVs and runs code in the sandbox to build charts and stats | Numbers come from real code, not guesses, and you build no compute or isolation of your own |
-| 📄 | **Document processing** | Extracts, transforms and saves outputs to Foundry Files | Results are saved files that downstream apps can use, not throwaway chat text |
-| 🧰 | **Ops runbooks** | Follows a skill step by step and calls tools through MCP | The same steps run every time, so outcomes are consistent and auditable, and there's no orchestration code to maintain |
-| 🎧 | **Support agents** | Combines knowledge, tools and per-conversation context | Answers stay grounded and in context across turns, so fewer cases get escalated |
-| 🤝 | **Multi-step work** | Plans, delegates to subagents and checks its own results | Complex tasks finish in one request; you get the agent loop without writing it |
+| 🔎 | **Research briefs** | Web search, then a structured, cited write-up | A plain prompt agent can search, but the harness also **fetches and works through full pages** with the Web tool and file system, and follows a skill's steps. A hosted agent would mean writing that loop yourself |
+| 📊 | **Data analysis** | Reads uploaded CSVs and runs code in the sandbox to build charts and stats | Uploaded files are **ready in a per-conversation workspace**, and the agent runs **shell commands** on them and returns charts as files. A hosted agent would need your own isolated compute for running untrusted code |
+| 📄 | **Document processing** | Extracts, transforms and saves outputs to Foundry Files | It works on files across many steps (**read → write → shell**), and outputs are saved to Foundry Files **under the agent's own identity**. A plain prompt agent mostly returns chat text |
+| 🧰 | **Ops runbooks** | Follows a skill step by step and calls tools through MCP | **Skills plus shell** run the procedure, and **network egress rules** control which hosts the harness can reach. Those rules only apply to harness agents, not plain prompt agents |
+| 🎧 | **Support agents** | Combines knowledge, tools and per-conversation context | **Each conversation gets its own workspace**, so one customer's files never touch another's, and Foundry idles and resumes it for you |
+| 🤝 | **Multi-step work** | Plans, delegates to subagents and checks its own results | **Subagents** come built in, so you get hosted-agent-style orchestration with **no framework, container or code to run** |
 
 ---
 
-## 🛡️ Guardrails to apply from day one
+## 🆚 Why the harness? Prompt agent vs. + Copilot harness vs. hosted agent
+
+You *can* build most of these with a plain prompt agent or a hosted agent. The harness sits in the middle: **hosted-agent capabilities with prompt-agent effort**.
+
+| Capability | Prompt agent | **Prompt agent + Copilot harness** | Hosted agent |
+|---|---|---|---|
+| Authoring | Instructions + tools | **Instructions + tools + skills** (Markdown and YAML) | Your code and framework |
+| Multi-step tool loop | Tool calling with declared tools | ✅ **Managed agent loop** | You build it |
+| Per-conversation file workspace | ❌ | ✅ **Isolated, persists across turns** | You build it |
+| Shell commands and file read/write | ❌ (Code Interpreter only) | ✅ **Built-in harness tools** | You build it |
+| Subagents | ❌ | ✅ **Built in** | You build it |
+| Return generated files | Through Code Interpreter | ✅ **Uploaded to Foundry Files with the agent's identity** | You build it |
+| Network egress control | ❌ | ✅ **Allow and deny rules per host** | Your network setup |
+| Runtime to operate | None | **None, because Foundry runs it** | Container, scaling, patching |
+| Custom framework, middleware, own model | ❌ | ❌ | ✅ |
+
+### 🛡️ Guardrails the harness gives you
+
+| Guardrail | How the harness provides it |
+|---|---|
+| **Isolated execution** | Shell and code run in a **Foundry-managed sandbox**, never on your infrastructure, and each conversation has its own workspace |
+| **Least-privilege tools** | Turn each harness tool (**file read, file write, shell, web, subagents**) on or off separately. For example, disable Shell for a read-only agent |
+| **Network egress control** | Attach a guardrail policy with allow and deny rules per host to control outbound traffic from shell commands and the Web tool. Start in **Audit** mode, then switch to **Enforce** |
+| **Identity, not secrets** | The agent has its own **Entra identity**, so file uploads and toolbox calls are authorized by RBAC (Foundry User role), not keys |
+| **Human approval** | Customer MCP tools support `require_approval`. Approval for the harness tools themselves is managed by the service |
+| **Versioned and auditable** | Skills and agents are **immutable versions**, and the usual Foundry project roles, policies and tracing all still apply |
+
+> **In short:** choose a **prompt agent** for simple Q&A, the **Copilot harness** when the agent needs to *do work* (files, shell, multiple steps) safely without you running a runtime, and a **hosted agent** only when you need to own the code, the framework or the model.
+>
+> <sub>Source: [Use the Microsoft Copilot harness with prompt agents](https://learn.microsoft.com/azure/foundry/agents/how-to/use-tools-skills-copilot-harness), specifically "Understand what the harness changes", "Configure harness tools" and "Control network egress".</sub>
+
+---
+
+## ✅ Your security checklist
 
 - 🐚 **Limit the shell.** Enable only the tools the agent really needs.
 - 🪪 **Identity, not secrets.** Use the agent's Entra identity and RBAC, never keys in instructions.
